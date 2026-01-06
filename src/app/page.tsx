@@ -2,7 +2,7 @@
 
 import { auth } from '../../firebase-config';
 import { GoogleAuthProvider, signInWithPopup } from 'firebase/auth';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { User } from 'firebase/auth';
 
 function App() {
@@ -18,6 +18,10 @@ function App() {
         console.log(err);
       });
   }
+  // before
+  useEffect(() => {
+    console.log('코드레빗 테스트용');
+  }, []);
 
   return (
     <div>
