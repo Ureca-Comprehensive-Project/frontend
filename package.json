@@ -14,8 +14,11 @@
     "axios": "^1.13.2",
     "firebase": "^12.7.0",
     "next": "16.1.1",
+    "prettier": "^3.7.4",
     "react": "19.2.3",
-    "react-dom": "19.2.3"
+    "react-dom": "19.2.3",
+    "react-error-boundary": "^6.0.2",
+    "tanstack": "^1.0.3"
   },
   "devDependencies": {
     "@chromatic-com/storybook": "^4.1.3",
