@@ -9,10 +9,10 @@ jobs:
     runs-on: ubuntu-latest
     if: github.event.issue.user.login != 'github-actions[bot]'
 
-    permissions:
-      contents: write
-      issues: write
-      workflows: write
+    # permissions:
+    #   contents: write
+    #   issues: write
+    #   workflows: write
 
     steps:
       - name: Checkout code
