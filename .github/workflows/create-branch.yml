@@ -7,32 +7,34 @@ on:
 jobs:
   create_branch:
     runs-on: ubuntu-latest
+    # 봇이 생성한 이슈에는 반응하지 않음
     if: github.event.issue.user.login != 'github-actions[bot]'
-
-    # permissions:
-    #   contents: write
-    #   issues: write
-    #   workflows: write
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+        with:
+          # 체크아웃 단계부터 본인의 토큰(GH_TOKEN)을 사용해야 푸시 권한이 유지됩니다.
+          token: ${{ secrets.GH_TOKEN }}
 
       - name: Create and Push Branch
         run: |
-          # 라벨(feat, fix 등) 가져오기
+          # 1. 라벨 추출
           PREFIX="${{ github.event.issue.labels[0].name }}"
           if [ -z "$PREFIX" ]; then PREFIX="feat"; fi
 
-          # 제목에서 Jira 이슈 키(MNB-숫자) 추출
-          # 제목 예: "[MNB-12] feat: 로그인 기능" -> MNB-12 추출
+          # 2. Jira 키 추출
           FULL_TITLE="${{ github.event.issue.title }}"
           JIRA_KEY=$(echo "$FULL_TITLE" | grep -oE 'MNB-[0-9]+' | head -1)
+          if [ -z "$JIRA_KEY" ]; then JIRA_KEY="${{ github.event.issue.number }}"; fi
 
-          # 최종 브랜치명 조합: feat/MNB-12
+          # 3. 브랜치명 조합
           BRANCH_NAME="${PREFIX}/${JIRA_KEY}"
 
-          # Git 명령어로 브랜치 생성 및 푸시
+          # 4. Git 설정 및 푸시
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+
           git checkout -b "$BRANCH_NAME"
           git push origin "$BRANCH_NAME"
         env:
