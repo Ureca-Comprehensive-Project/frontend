@@ -1,0 +1,33 @@
+name: Create Sub-task Branch
+
+on:
+  issues:
+    types: [opened]
+
+jobs:
+  create_branch:
+    runs-on: ubuntu-latest
+    if: github.event.issue.user.login != 'github-actions[bot]'
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Create and Push Branch
+        run: |
+          # 라벨(feat, fix 등) 가져오기
+          PREFIX="${{ github.event.issue.labels[0].name }}"
+          if [ -z "$PREFIX" ]; then PREFIX="feat"; fi
+
+          # 제목에서 Jira 이슈 키(MNB-숫자) 추출
+          # 제목 예: "[MNB-12] feat: 로그인 기능" -> MNB-12 추출
+          FULL_TITLE="${{ github.event.issue.title }}"
+          JIRA_KEY=$(echo "$FULL_TITLE" | grep -oE 'MNB-[0-9]+' | head -1)
+
+          # 최종 브랜치명 조합: feat/MNB-12
+          BRANCH_NAME="${PREFIX}/${JIRA_KEY}"
+
+          # Git 명령어로 브랜치 생성 및 푸시
+          git checkout -b "$BRANCH_NAME"
+          git push origin "$BRANCH_NAME"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
